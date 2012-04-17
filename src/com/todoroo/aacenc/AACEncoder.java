@@ -3,11 +3,23 @@ package com.todoroo.aacenc;
 public class AACEncoder {
 
     /**
-     * Native JNI
+     * Native JNI - initialize AAC encoder
      *
      */
-    public native byte[] encode(int bitrate, int channels,
-            int sampleRate, int bitsPerSample, byte[] inputArray);
+    public native void init(int bitrate, int channels,
+            int sampleRate, int bitsPerSample, String outputFile);
+
+    /**
+     * Native JNI - encode one or more frames
+     *
+     */
+    public native void encode(byte[] inputArray);
+
+    /**
+     * Native JNI - uninitialize AAC encoder and flush file
+     *
+     */
+    public native void uninit();
 
     static {
         System.loadLibrary("aac-encoder");
