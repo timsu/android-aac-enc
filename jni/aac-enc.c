@@ -15,13 +15,13 @@ void throwException(JNIEnv* env, const char *name, const char *msg)
 }
 
 jbyteArray
-Java_com_todoroo_aacenc_LibAacEnc_encode( JNIEnv* env,
-                                          jobject thiz,
-                                          int bitrate,
-                                          int channels,
-                                          int sampleRate,
-                                          int bitsPerSample,
-                                          jbyteArray inputArray)
+Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
+                                           jobject thiz,
+                                           int bitrate,
+                                           int channels,
+                                           int sampleRate,
+                                           int bitsPerSample,
+                                           jbyteArray inputArray)
 {
   int ch;
 

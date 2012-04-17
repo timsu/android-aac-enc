@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Config.mk
 
-LOCAL_MODULE := aac-enc
+LOCAL_MODULE := aac-encoder
 
 ENC_SRC := src
 
