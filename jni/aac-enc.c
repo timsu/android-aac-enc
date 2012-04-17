@@ -115,7 +115,7 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
 
   /* GET OUTPUT DATA */
   int i;
-  for (i = 0; i < 5; i++) {
+  while (1) {
     int status = codec_api.GetOutputData(handle, &output, &output_info);
     if (status == VO_ERR_INPUT_BUFFER_SMALL)
       break;
@@ -127,10 +127,7 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
       return;
     }
 
-    LOG("output length: %d (%d)", output.Length, i);
-
     fwrite(outbuf, 1, output.Length, outfile);
-
   }
 
   LOG("finished output");
