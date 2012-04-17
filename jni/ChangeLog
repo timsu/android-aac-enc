@@ -1,0 +1,12 @@
+0.1.2
+ - Fix a rare crash (division by zero)
+ - Update source files to the latest version upstream (no functional changes)
+ - Hide internal symbols in shared libraries
+ - Minor tweaks
+
+0.1.1
+ - Fix a bitstream corruption error
+ - Fix building for windows
+
+0.1.0
+ - Initial release of vo-aacenc
