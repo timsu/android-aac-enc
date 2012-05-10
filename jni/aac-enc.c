@@ -105,8 +105,6 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
 
   LOG("input buffer: %d", inputSize);
 
-  LOG("output data time %d", sizeof(outbuf));
-
   /* GET OUTPUT DATA */
   int i;
   for(i = 0; i < inputSize; i += readSize) {

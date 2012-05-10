@@ -15,9 +15,6 @@
  */
 package com.coremedia.iso;
 
-import com.googlecode.mp4parser.AbstractBox;
-import com.coremedia.iso.boxes.Box;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +26,13 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+
+import com.coremedia.iso.boxes.Box;
+import com.googlecode.mp4parser.AbstractBox;
+import com.todoroo.aacenc.AACToM4A;
+import com.todoroo.aacenc.R;
+
 /**
  * A Property file based BoxFactory
  */
@@ -36,31 +40,35 @@ public class PropertyBoxParserImpl extends AbstractBoxParser {
     Properties mapping;
 
     public PropertyBoxParserImpl(String... customProperties) {
-        InputStream is = new BufferedInputStream(getClass().getResourceAsStream("/isoparser-default.properties"));
+        Context context = AACToM4A.getContext();
+        InputStream raw = null, is = null;
+        mapping = new Properties();
         try {
-            mapping = new Properties();
-            try {
-                mapping.load(is);
-                Enumeration<URL> enumeration = Thread.currentThread().getContextClassLoader().getResources("isoparser-custom.properties");
+            raw = context.getResources().openRawResource(R.raw.isoparser);
+            is = new BufferedInputStream(raw);
+            mapping.load(is);
+            Enumeration<URL> enumeration = Thread.currentThread().getContextClassLoader().getResources("isoparser-custom.properties");
 
-                while (enumeration.hasMoreElements()) {
-                    URL url = enumeration.nextElement();
-                    InputStream customIS = new BufferedInputStream(url.openStream());
-                    try {
-                        mapping.load(customIS);
-                    } finally {
-                        customIS.close();
-                    }
+            while (enumeration.hasMoreElements()) {
+                URL url = enumeration.nextElement();
+                InputStream customIS = new BufferedInputStream(url.openStream());
+                try {
+                    mapping.load(customIS);
+                } finally {
+                    customIS.close();
                 }
-                for (String customProperty : customProperties) {
-                    mapping.load(new BufferedInputStream(getClass().getResourceAsStream(customProperty)));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
+            for (String customProperty : customProperties) {
+                mapping.load(new BufferedInputStream(getClass().getResourceAsStream(customProperty)));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             try {
-                is.close();
+                if(raw != null)
+                    raw.close();
+                if(is != null)
+                    is.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 // ignore - I can't help

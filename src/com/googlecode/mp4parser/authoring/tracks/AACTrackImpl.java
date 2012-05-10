@@ -1,7 +1,7 @@
 package com.googlecode.mp4parser.authoring.tracks;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,13 +46,13 @@ public class AACTrackImpl extends AbstractTrack {
     long maxBitRate;
     long avgBitRate;
 
-    private InputStream inputStream;
+    private PushbackInputStream inputStream;
     private List<ByteBuffer> samples;
     boolean readSamples = false;
     List<TimeToSampleBox.Entry> stts;
     public static Map<Integer, Integer> samplingFrequencyIndexMap = new HashMap<Integer, Integer>();
 
-    public AACTrackImpl(InputStream inputStream) throws IOException {
+    public AACTrackImpl(PushbackInputStream inputStream) throws IOException {
         this.inputStream = inputStream;
         stts = new LinkedList<TimeToSampleBox.Entry>();
 
@@ -206,7 +206,8 @@ public class AACTrackImpl extends AbstractTrack {
         if (100 != inputStream.read(data, 0, 100)) {
             return false;
         }
-        inputStream.skip(-100); // Rewind
+        inputStream.unread(data);
+
         ByteBuffer bb = ByteBuffer.wrap(data);
         BitReaderBuffer brb = new BitReaderBuffer(bb);
         int syncword = brb.readBits(12);
@@ -239,7 +240,8 @@ public class AACTrackImpl extends AbstractTrack {
         while (-1 != inputStream.read(header)) {
             ret = true;
             ByteBuffer bb = ByteBuffer.wrap(header);
-            inputStream.skip(-15);
+
+            inputStream.unread(header);
             BitReaderBuffer brb = new BitReaderBuffer(bb);
             int syncword = brb.readBits(12);
             System.err.format("readsamples: sync word: %x\n", syncword);
