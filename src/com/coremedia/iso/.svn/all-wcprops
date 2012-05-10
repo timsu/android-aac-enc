@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/580/trunk/isoparser/src/main/java/com/coremedia/iso
+END
+IsoTypeReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/525/trunk/isoparser/src/main/java/com/coremedia/iso/IsoTypeReader.java
+END
+IsoTypeWriterVariable.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/426/trunk/isoparser/src/main/java/com/coremedia/iso/IsoTypeWriterVariable.java
+END
+Hex.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/504/trunk/isoparser/src/main/java/com/coremedia/iso/Hex.java
+END
+IsoTypeReaderVariable.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/419/trunk/isoparser/src/main/java/com/coremedia/iso/IsoTypeReaderVariable.java
+END
+BoxParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/419/trunk/isoparser/src/main/java/com/coremedia/iso/BoxParser.java
+END
+Utf8.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/419/trunk/isoparser/src/main/java/com/coremedia/iso/Utf8.java
+END
+IsoFileConvenienceHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/526/trunk/isoparser/src/main/java/com/coremedia/iso/IsoFileConvenienceHelper.java
+END
+Ascii.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/419/trunk/isoparser/src/main/java/com/coremedia/iso/Ascii.java
+END
+ChannelHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/ChannelHelper.java
+END
+IsoTypeWriter.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/525/trunk/isoparser/src/main/java/com/coremedia/iso/IsoTypeWriter.java
+END
+AbstractBoxParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/AbstractBoxParser.java
+END
+IsoFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/IsoFile.java
+END
+PropertyBoxParserImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/PropertyBoxParserImpl.java
+END

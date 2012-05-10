@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/boxes/mdat
+END
+MediaDataBox.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/boxes/mdat/MediaDataBox.java
+END
+Segment.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/377/trunk/isoparser/src/main/java/com/coremedia/iso/boxes/mdat/Segment.java
+END
+DummyMap.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/377/trunk/isoparser/src/main/java/com/coremedia/iso/boxes/mdat/DummyMap.java
+END
+SampleList.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/505/trunk/isoparser/src/main/java/com/coremedia/iso/boxes/mdat/SampleList.java
+END
