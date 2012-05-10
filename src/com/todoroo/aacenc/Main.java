@@ -3,6 +3,7 @@ package com.todoroo.aacenc;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -48,6 +49,8 @@ public class Main extends Activity implements RecognitionListener {
                 play();
             }
         });
+
+        sr = SpeechRecognizer.createSpeechRecognizer(this);
     }
 
     private void play() {
@@ -74,8 +77,6 @@ public class Main extends Activity implements RecognitionListener {
     private ProgressDialog pd;
 
     private void write() {
-        sr = SpeechRecognizer.createSpeechRecognizer(this);
-
         sr.setRecognitionListener(this);
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -84,6 +85,7 @@ public class Main extends Activity implements RecognitionListener {
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "com.domain.app");
 
         speechStarted = 0;
+        baos.reset();
 
         pd = new ProgressDialog(this);
         pd.setMessage("Speak now...");
@@ -93,6 +95,7 @@ public class Main extends Activity implements RecognitionListener {
             @Override
             public void onCancel(DialogInterface dialog) {
                 sr.cancel();
+                onEndOfSpeech();
             }
         });
 
@@ -122,9 +125,14 @@ public class Main extends Activity implements RecognitionListener {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        sr.destroy();
+    }
+
+    @Override
     public void onEndOfSpeech() {
         pd.dismiss();
-        sr.destroy();
 
         if(speechStarted == 0)
             return;
@@ -132,7 +140,8 @@ public class Main extends Activity implements RecognitionListener {
         long delta = System.currentTimeMillis() - speechStarted;
 
         int sampleRate = (int) (baos.size() * 1000 / delta);
-        sampleRate = 8000;
+        sampleRate = 8000; // THIS IS A MAGIC NUMBER@?!!?!?!
+        // can i has calculate?
 
         System.err.println("computed sample rate: " + sampleRate);
 
@@ -175,8 +184,9 @@ public class Main extends Activity implements RecognitionListener {
 
     @Override
     public void onResults(Bundle results) {
+        ArrayList<String> strings = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         ((TextView)findViewById(R.id.text)).setText(
-                results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString());
+                strings.size() == 0 ? "" : strings.get(0));
     }
 
     @Override
