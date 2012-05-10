@@ -5,7 +5,7 @@
 #include <inc/cmnMemory.h>
 #include <android/log.h> 
 
-#define DEBUG 0
+#define DEBUG 1
 
 #if DEBUG
 #define LOG(msg, args...) __android_log_print(ANDROID_LOG_ERROR, "aac-enc", msg, ## args)
@@ -70,6 +70,7 @@ Java_com_todoroo_aacenc_AACEncoder_init( JNIEnv* env,
   params.bitRate = bitrate;
   params.nChannels = channels;
   params.adtsUsed = 1;
+
   if (codec_api.SetParam(handle, VO_PID_AAC_ENCPARAM, &params) != VO_ERR_NONE) {
     throwException(env, "java/lang/IllegalArgumentException", 
                    "Unable to set encoding parameters");
@@ -99,28 +100,31 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
   VO_CODECBUFFER input = { 0 }, output = { 0 };
   VO_AUDIO_OUTPUTINFO output_info = { 0 };
 
-  unsigned char outbuf[20480];
+  int readSize = params.nChannels * 2 * 1024;
+  uint16_t* outbuf = (uint16_t*) malloc(readSize * 2);
 
   LOG("input buffer: %d", inputSize);
 
-  /* SET INPUT DATA */
-  input.Buffer = buffer;
-  input.Length = inputSize;
-  codec_api.SetInputData(handle, &input);
-
-  output.Buffer = outbuf;
-  output.Length = sizeof(outbuf);
-
-  LOG("output data time");
+  LOG("output data time %d", sizeof(outbuf));
 
   /* GET OUTPUT DATA */
   int i;
-  while (1) {
+  for(i = 0; i < inputSize; i += readSize) {
+
+    input.Buffer = buffer + i;
+    input.Length = readSize;
+    codec_api.SetInputData(handle, &input);
+
+    output.Buffer = outbuf;
+    output.Length = readSize * 2;
+
     int status = codec_api.GetOutputData(handle, &output, &output_info);
     if (status == VO_ERR_INPUT_BUFFER_SMALL)
       break;
 
-    if (status != VO_ERR_NONE) {
+    if (status == VO_ERR_OUTPUT_BUFFER_SMALL) {
+      LOG("output buffer was too small, read %d", output_info.InputUsed);
+    } else if (status != VO_ERR_NONE) {
       char message[100];
       sprintf(message, "Unable to encode frame: %x", status);
       throwException(env, "java/lang/RuntimeException", message);
@@ -132,6 +136,7 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
 
   LOG("finished output");
   (*env)->ReleaseByteArrayElements(env, inputArray, buffer, JNI_ABORT);
+  free(outbuf);
 }
 
 void

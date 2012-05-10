@@ -15,28 +15,27 @@ public class Main extends Activity {
 
         try {
             File dir = getFilesDir();
-            String output = dir.toString() + "/audio.aac";
+            String outaac = dir.toString() + "/audio.aac";
 
+            System.err.println("Writing AAC: " + outaac);
             AACEncoder encoder = new AACEncoder();
-            encoder.init(64000, 1, 16000, 16, output);
+            encoder.init(64000, 1, 44100, 16, outaac);
 
-            byte[] input = new byte[16000];
-            for(int i = 0; i < input.length; i++)
-                input[i] = (byte) Math.round(255 * Math.sin(i * 1.0 / 10));
+            byte[] input = new byte[44100];
 
-            encoder.encode(input);
+            for(int j = 10; j < 100; j += 10) {
+                for(int i = 0; i < input.length; i++)
+                    input[i] = (byte) Math.round(255 * Math.sin(i * 1.0 / j));
 
-            for(int i = 0; i < input.length; i++)
-                input[i] = (byte) Math.round(255 * Math.sin(i * 1.0 / 100));
+                encoder.encode(input);
+            }
 
-            encoder.encode(input);
-
-            for(int i = 0; i < input.length; i++)
-                input[i] = (byte) Math.round(255 * Math.sin(i * 1.0 / 200));
-
-            encoder.encode(input);
 
             encoder.uninit();
+
+            String outm4a = dir.toString() + "/audio.m4a";
+            System.err.println("Writing M4A: " + outm4a);
+            new AACToM4A().convert(outaac, outm4a);
 
             Toast.makeText(Main.this, "WE DID IT", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
