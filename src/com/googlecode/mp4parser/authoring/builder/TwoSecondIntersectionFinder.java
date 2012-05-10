@@ -15,12 +15,12 @@
  */
 package com.googlecode.mp4parser.authoring.builder;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.coremedia.iso.boxes.TimeToSampleBox;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This <code>FragmentIntersectionFinder</code> cuts the input movie in 2 second
@@ -50,7 +50,7 @@ public class TwoSecondIntersectionFinder implements FragmentIntersectionFinder {
             }
         }
 
-        long fragments[] = new long[(int) Math.ceil(trackLength / 2) - 1];
+        long fragments[] = new long[(int) Math.max(2, Math.ceil(trackLength / 2)) - 1];
         Arrays.fill(fragments, -1);
         fragments[0] = 0;
 

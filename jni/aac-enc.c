@@ -5,7 +5,7 @@
 #include <inc/cmnMemory.h>
 #include <android/log.h> 
 
-#define DEBUG 1
+#define DEBUG 0
 
 #if DEBUG
 #define LOG(msg, args...) __android_log_print(ANDROID_LOG_ERROR, "aac-enc", msg, ## args)

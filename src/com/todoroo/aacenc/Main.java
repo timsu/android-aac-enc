@@ -1,21 +1,39 @@
 package com.todoroo.aacenc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class Main extends Activity {
+public class Main extends Activity implements RecognitionListener {
+
+    private String AAC_FILE;
+    private String M4A_FILE = "/sdcard/audio.m4a";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        File dir = getFilesDir();
+        AAC_FILE = dir.toString() + "/audio.aac";
+
 
         findViewById(R.id.write).setOnClickListener(new OnClickListener() {
             @Override
@@ -33,12 +51,10 @@ public class Main extends Activity {
     }
 
     private void play() {
-        String file = "/sdcard/audio.m4a";
-
         MediaPlayer mediaPlayer = new MediaPlayer();
 
         try {
-            mediaPlayer.setDataSource(file);
+            mediaPlayer.setDataSource(M4A_FILE);
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IllegalArgumentException e) {
@@ -52,35 +68,118 @@ public class Main extends Activity {
         Toast.makeText(Main.this, "Playing Audio", Toast.LENGTH_LONG).show();
     }
 
+    private AACEncoder encoder = new AACEncoder();
+    private long speechStarted = 0;
+    private SpeechRecognizer sr;
+    private ProgressDialog pd;
+
     private void write() {
+        sr = SpeechRecognizer.createSpeechRecognizer(this);
+
+        sr.setRecognitionListener(this);
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "com.domain.app");
+
+        speechStarted = 0;
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Speak now...");
+        pd.setIndeterminate(true);
+        pd.setCancelable(true);
+        pd.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                sr.cancel();
+            }
+        });
+
+        pd.show();
+        sr.startListening(intent);
+
+        speechStarted = System.currentTimeMillis();
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        System.err.println("beginning");
+
+    }
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        if(speechStarted > 0) {
+            try {
+                baos.write(buffer);
+            } catch (IOException e) {
+                //
+            }
+        }
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        pd.dismiss();
+        sr.destroy();
+
+        if(speechStarted == 0)
+            return;
+
+        long delta = System.currentTimeMillis() - speechStarted;
+
+        int sampleRate = (int) (baos.size() * 1000 / delta);
+        sampleRate = 8000;
+
+        System.err.println("computed sample rate: " + sampleRate);
+
+        encoder.init(64000, 1, sampleRate, 16, AAC_FILE);
+
+        encoder.encode(baos.toByteArray());
+
+        System.err.println("end");
+
+        encoder.uninit();
 
         try {
-            File dir = getFilesDir();
-            String outaac = dir.toString() + "/audio.aac";
+            new AACToM4A().convert(this, AAC_FILE, M4A_FILE);
 
-            System.err.println("Writing AAC: " + outaac);
-            AACEncoder encoder = new AACEncoder();
-            encoder.init(64000, 1, 44100, 16, outaac);
-
-            byte[] input = new byte[44100];
-
-            for(int j = 10; j < 100; j += 10) {
-                for(int i = 0; i < input.length; i++)
-                    input[i] = (byte) Math.round(255 * Math.sin(i * 1.0 / j));
-
-                encoder.encode(input);
-            }
-
-
-            encoder.uninit();
-
-            String outm4a = "/sdcard/audio.m4a";
-            System.err.println("Writing M4A: " + outm4a);
-            new AACToM4A().convert(this, outaac, outm4a);
-
-            Toast.makeText(Main.this, "WE DID IT", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            Toast.makeText(Main.this, "File Saved!", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(Main.this, "Error :(", Toast.LENGTH_LONG).show();
+            Log.e("ERROR", "error converting", e);
         }
+    }
+
+    @Override
+    public void onError(int error) {
+        Log.w("Speech Error", "Error code: " + error);
+    }
+
+    @Override
+    public void onEvent(int arg0, Bundle arg1) {
+        //
+    }
+
+    @Override
+    public void onPartialResults(Bundle partialResults) {
+        onResults(partialResults);
+    }
+
+    @Override
+    public void onReadyForSpeech(Bundle arg0) {
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        ((TextView)findViewById(R.id.text)).setText(
+                results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString());
+    }
+
+    @Override
+    public void onRmsChanged(float arg0) {
     }
 }

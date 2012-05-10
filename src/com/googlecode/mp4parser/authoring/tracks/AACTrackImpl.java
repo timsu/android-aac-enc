@@ -211,7 +211,7 @@ public class AACTrackImpl extends AbstractTrack {
         ByteBuffer bb = ByteBuffer.wrap(data);
         BitReaderBuffer brb = new BitReaderBuffer(bb);
         int syncword = brb.readBits(12);
-        System.err.format("readvars: sync word: %x\n", syncword);
+
         if (syncword != 0xfff) {
             return false;
         }
@@ -244,7 +244,7 @@ public class AACTrackImpl extends AbstractTrack {
             inputStream.unread(header);
             BitReaderBuffer brb = new BitReaderBuffer(bb);
             int syncword = brb.readBits(12);
-            System.err.format("readsamples: sync word: %x\n", syncword);
+
             if (syncword != 0xfff) {
                 return false;
             }
