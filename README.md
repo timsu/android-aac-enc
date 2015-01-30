@@ -7,7 +7,7 @@ In addition, includes a patched [MP4Parser](http://code.google.com/p/mp4parser) 
 
 This project is set up as a single Eclipse project with a Main.java example activity. AAC encoding logic is found in jni/aac-enc.c, which needs to be built with the [Android NDK](http://developer.android.com/sdk/ndk/index.html). I used NDK r7c, but any version should work.
 
-For more information, check out the [original blog article](http://www.betaful.com/2012/04/encoding-aac-audio-in-android).
+For more information, check out the [original blog article](http://betaful.com/post/82668810035/encoding-aac-audio-in-android).
 
 Why?
 ----
