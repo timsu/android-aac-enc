@@ -107,10 +107,12 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
 
   /* GET OUTPUT DATA */
   int i;
+  int byteLeft = inputSize;
+
   for(i = 0; i < inputSize; i += readSize) {
 
     input.Buffer = buffer + i;
-    input.Length = readSize;
+    input.Length = (byteLeft < readSize) ? byteLeft : readSize;
     codec_api.SetInputData(handle, &input);
 
     output.Buffer = outbuf;
@@ -130,6 +132,7 @@ Java_com_todoroo_aacenc_AACEncoder_encode( JNIEnv* env,
     }
 
     fwrite(outbuf, 1, output.Length, outfile);
+    byteLeft -= readSize;
   }
 
   LOG("finished output");
